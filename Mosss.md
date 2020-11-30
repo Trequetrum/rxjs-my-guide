@@ -4,7 +4,7 @@
 
 This came from a question I asked on Stackoverflow. I just finished writing up my query when the answer came to me. It's an interesting problem because it centers around how synchronous and asynchronous observables work.
 
-To start with, consider this these snippits
+To start with, consider these snippits
 
 ```JavaScript
 console.log("before timeout");
@@ -12,15 +12,24 @@ setTimeout(() => console.log("After 0ms"), 0);
 console.log("after timeout");
 // Output: "before timeout" "after timeout" "After 0ms"
 
+console.log("before promise");
+new Promise(resolve => 
+  resolve("Asynchronous Promise")
+).then(console.log);
+console.log("after promise");
+// output: "before promise" "after promise" "Asynchronous Promise"
+
 console.log("before observable");
-of("Synchronous Observable").subscribe(console.log);
+new Observable(observer => 
+  observer.next("Synchronous Observable")
+).subscribe(console.log);
 console.log("after observable");
 // output: "before observable" "Synchronous Observable" "after observable"
 ```
 
-Even though the call to `setTimeout` is set to run after 0 milliseconds, it still goes after the current synchronous block is completely done. That's because the code in `setTimeout` is run asynchronously. It goes into JavaScript's event loop and the soonest that it will be executed is after the currently running block of code completes. Promises work on the same premise, they run asynchronously. 
+Even though the call to `setTimeout` is set to run after 0 milliseconds, it still goes after the current synchronous block is completely done. That's because the code in `setTimeout` is run asynchronously. It goes into JavaScript's event loop and the soonest that it will be executed is after the currently running block of code completes. Promises work on the same premise, even though the promise above resolves immediately it is run asynchronously.
 
-**Observables run synchronously**. They appear asynchronous when combined with any of JavaScript's other asynchronous constructs (`setTimeout`) or with certain RxJS operators (`delay`). In general, however, there is some amount of synchronous execution that happens the moment you `subscribe()` to an Observable.
+**Observables run synchronously**. They appear asynchronous when combined with any of JavaScript's other asynchronous constructs (ex: `setTimeout`) or with certain RxJS operators (ex: `delay`). In general, however, there is some amount of synchronous execution that happens the moment you `subscribe()` to an Observable.
 
 ### The Problem
 
@@ -67,6 +76,8 @@ from([1,2,3,4,5]).pipe(
 
 The problem here is that we need to create the entire apparatus that is a subject in order to accomplish a very specific goal. It's like buying a truck in order to get the wheel. It doesn't scale well. Finally, just like calling `unsubscribe()` yourself, It's also still mixing imperative and functional javascript.
 
+For this example problem, `take(4)` or `takeWhile(x => x > 3)` both get the job done without the need to `unsubscribe` explicitly. This is ideal where possible.
+
 ### The Same Problem at a Bigger Scale
 
 Consider an operator that takes a list of observables and emits values only from the observables earlier in the list than any previous emissions.
@@ -85,7 +96,7 @@ function prefer<T, R>(...observables: Observable<R>[]): Observable<R>{
     }
 
     observables.map(stream => stream.pipe(
-      delay(0)
+      delay(0) // <-- Delayed Values are placed in the event loop  
     )).forEach((stream, index) => 
       subscrptions.push(stream.subscribe(payload => {
         observer.next(payload);
