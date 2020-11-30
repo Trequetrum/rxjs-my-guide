@@ -6,26 +6,35 @@ This came from a question I asked on Stackoverflow. I just finished writing up m
 
 To start with, consider these snippits
 
+----
 ```JavaScript
-console.log("before timeout");
-setTimeout(() => console.log("After 0ms"), 0);
-console.log("after timeout");
-// Output: "before timeout" "after timeout" "After 0ms"
-
-console.log("before promise");
+console.log("Before Timeout");
+setTimeout(
+  () => console.log("Asynchronous Timeout"), 
+  0
+);
+console.log("After Timeout");
+// Output: "before timeout" "after timeout" "Asynchronous Timeout"
+```
+----
+```JavaScript
+console.log("Before Promise");
 new Promise(resolve => 
   resolve("Asynchronous Promise")
 ).then(console.log);
-console.log("after promise");
+console.log("After Promise");
 // output: "before promise" "after promise" "Asynchronous Promise"
-
-console.log("before observable");
+```
+---
+```JavaScript
+console.log("Before Observable");
 new Observable(observer => 
   observer.next("Synchronous Observable")
 ).subscribe(console.log);
-console.log("after observable");
+console.log("After Observable");
 // output: "before observable" "Synchronous Observable" "after observable"
 ```
+----
 
 Even though the call to `setTimeout` is set to run after 0 milliseconds, it still goes after the current synchronous block is completely done. That's because the code in `setTimeout` is run asynchronously. It goes into JavaScript's event loop and the soonest that it will be executed is after the currently running block of code completes. Promises work on the same premise, even though the promise above resolves immediately it is run asynchronously.
 
