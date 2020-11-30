@@ -10,69 +10,13 @@ How will this work? Our custom observable creates a stream that outputs the numb
 
 ### Implemented with switchMap and Timer
 
-The thing I don’t really like: `switchMap` manages the subscriptions to `timer` really well up until the end. When a user completes or errors the `control$` stream, we want to unsubscribe the final timer (ending the stopwatch).
-
-We could take care of the error case with `catchError`, but there’s no built-in way to catch the completion of a stream. With my custom operator ([catchComplete](catchComplete.md)), this is easy. 
-
-Without, you can solve it with a subject and `takeUntil` but it looks a bit clunky.
-
-##### No [catchComplete](catchComplete.md)
-
-```JavaScript
-function createStopwatch(control$: Observable<string>, interval = 1000): Observable<number>{
-  return defer(() => {
-    let toggle: boolean = false;
-    let count: number = 0;
-
-    const endTicker$ = new Subject();
-
-    const ticker = () => {
-      return timer(0, interval).pipe(
-        takeUntil(endTicker$),
-        map(x => count++)
-      )
-    }
-
-    return control$.pipe(
-      tap({
-        next: _ => {/*Do nothing*/},
-        complete: () => {
-          endTicker$.next();
-          endTicker$.complete();
-        },
-        error: err => {
-          endTicker$.next();
-          endTicker$.complete();
-        }
-      }),
-      filter(control => 
-        control === "START" ||
-        control === "STOP" ||
-        control === "RESET"
-      ),
-      switchMap(control => {
-        if(control === "START" && !toggle){
-          toggle = true;
-          return ticker();
-        }else if(control === "STOP" && toggle){
-          toggle = false;
-          return EMPTY;
-        }else if(control === "RESET"){
-          count = 0;
-          if(toggle){
-            return ticker();
-          }
-        }
-        return EMPTY;
-      })
-    );
-  });
-}
-```
-
 ##### With [catchComplete](catchComplete.md)
 
 ```JavaScript
+function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> {
+  return s => concat(s, defer(fn));
+}
+
 function createStopwatch(control$: Observable<string>, interval = 1000): Observable<number>{
   return defer(() => {
     let toggle: boolean = false;
@@ -86,7 +30,7 @@ function createStopwatch(control$: Observable<string>, interval = 1000): Observa
 
     return control$.pipe(
       catchError(_ => of("END")),
-      catchComplete(_ => of("END")),
+      catchComplete(() => of("END")),
       filter(control => 
         control === "START" ||
         control === "STOP" ||
