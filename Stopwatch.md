@@ -110,14 +110,29 @@ function createStopwatch(control: Observable<string>, interval = 1000): Observab
   });
 }
 ```    
-    
+
+### Create a stopwatch as an object
+
+```JavaScript
+function getStopWatch(interval: number): {
+  control$: Subject<string>, 
+  display$: Observable<number>
+} {
+  const control$ = new Subject<string>();
+  return {
+    control$,
+    display$: createStopwatch(control$, interval)
+  }
+}
+```
+
 ### StopWatch in Use
 
 Here is an example of this observable being used. I manage the control stream via a subject, but it could just as easily be merged/mapped DOM events or somesuch. 
 
 ```JavaScript
-const control$ = new Subject<string>();
-createStopwatch(control$, 250).subscribe(console.log);
+const watch = getStopWatch(250);
+watch.display$.subscribe(console.log);
 
 // We send a new action to our control stream every 1 second
 const actions = ["START", "STOP", "START", "RESET", "START"]
@@ -129,11 +144,11 @@ zip(from(actions), interval(1000)).pipe(
     // If our control finishes in any way (
     // completes, errors, or is unsubscribed), our
     // sopwatch reacts by doing the same.
-    control$.complete();
+    watch.control$.complete();
   })
-).subscribe(x => {
-  console.log(x);
-  control$.next(x);
+).subscribe(action => {
+  console.log(action);
+  watch.control$.next(action);
 });
 ```
 
@@ -142,21 +157,22 @@ zip(from(actions), interval(1000)).pipe(
 This controls the stopwatch with `setTimeout` instead of `interval`.
 
 ```JavaScript
-const control$ = new Subject<string>();
-createStopwatch(control$, 250).subscribe(console.log);
+const watch = getStopWatch(250);
+watch.display$.subscribe(console.log);
 
 // We send a new action to our control stream every 1 second
 const actions = ["START", "STOP", "START", "RESET", "START"]
 
-actions.forEach((val, index) => {
+actions.forEach((action, index) => {
   setTimeout(() => {
-    control$.next(val);
+    console.log(action);
+    watch.control$.next(action);
   },
   index * 1000);
 })
 
 // Unsubscribe via the control
 setTimeout(() => {
-  control$.complete();
+  watch.control$.complete();
 }, actions.length * 1000);
 ```
