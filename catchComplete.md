@@ -4,7 +4,7 @@ This operator functions very similarly to `catchError`, only it work on `complet
 This lets you chain a new observable into the completion of a previous observable.
 
 ```JavaScript
-function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R>{
+function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> {
   return s => new Observable(observer => {
     let iSub: Subscription;
     const oSub = s.subscribe({
@@ -21,6 +21,12 @@ function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R>{
   });
 }
 ```
+
+## Updated Implementation:
+
+function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> {
+  return s => concat(s, defer(fn));
+}
 
 ### catchComplete in use:
 
