@@ -1,6 +1,6 @@
 # The catchComplete operator
 
-This operator functions very similarly to `catchError`, only it work on `complete` instead of `error` messages. 
+This operator functions very similarly to `catchError`, only it functions over `complete` instead of `error` messages. 
 This lets you chain a new observable into the completion of a previous observable.
 
 ```JavaScript
