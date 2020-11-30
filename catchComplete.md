@@ -24,9 +24,12 @@ function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> 
 
 ## Updated Implementation:
 
+
+```JavaScript
 function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> {
   return s => concat(s, defer(fn));
 }
+```
 
 ### catchComplete in use:
 
