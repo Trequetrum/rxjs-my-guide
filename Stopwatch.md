@@ -16,7 +16,9 @@ How will this work? Our custom observable creates a stream that outputs the numb
 function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> {
   return s => concat(s, defer(fn));
 }
+```
 
+```JavaScript
 function createStopwatch(control$: Observable<string>, interval = 1000): Observable<number>{
   return defer(() => {
     let toggle: boolean = false;
