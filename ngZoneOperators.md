@@ -1,5 +1,9 @@
 # ngZone Operators
 
+Now that I've spent more time developing with Angular and RxJS, I don't use these operators anymore. RxJS and asnyc pipe handle change detection such that you don't need to worry about Angular’s change detection. When used to its full potential you can turn change detection off.
+
+That being said, I’m sure there’s some fun uses for a pipeable way to enter and leave the angular zone mind-stream. Even if only for educational purposes. 
+
 ```JavaScript
 constructor(private ngZone: NgZone) { }
 
@@ -13,8 +17,8 @@ constructor(private ngZone: NgZone) { }
 ngZoneEnterObservable<T>(input$: Observable<T>): Observable<T> {
   return new Observable<T>(observer => {
     const sub = input$.subscribe({
-      next: (val) => this.ngZone.run(() => observer.next(val)),
-      error: (err) => this.ngZone.run(() => observer.error(err)),
+      next: val => this.ngZone.run(() => observer.next(val)),
+      error: err => this.ngZone.run(() => observer.error(err)),
       complete: () => this.ngZone.run(() => observer.complete()),
     });
     return { unsubscribe: () => sub.unsubscribe() };
@@ -25,7 +29,7 @@ ngZoneEnterObservable<T>(input$: Observable<T>): Observable<T> {
  * This is a pipeable version of ngZoneEnterObservable
  *****/
 ngZoneEnter<T>(): MonoTypeOperatorFunction<T> {
-  return inpus$ => this.ngZoneEnterObservable(inpus$);
+  return this.ngZoneEnterObservable;
 }
 
 /*****
@@ -35,8 +39,8 @@ ngZoneEnter<T>(): MonoTypeOperatorFunction<T> {
 ngZoneLeaveObservable<T>(input$: Observable<T>): Observable<T> {
   return new Observable<T>(observer => {
     const sub = input$.subscribe({
-      next: (val) => this.ngZone.runOutsideAngular(() => observer.next(val)),
-      error: (err) => this.ngZone.runOutsideAngular(() => observer.error(err)),
+      next: val => this.ngZone.runOutsideAngular(() => observer.next(val)),
+      error: err => this.ngZone.runOutsideAngular(() => observer.error(err)),
       complete: () => this.ngZone.runOutsideAngular(() => observer.complete()),
     });
     return { unsubscribe: () => sub.unsubscribe() };
@@ -47,6 +51,6 @@ ngZoneLeaveObservable<T>(input$: Observable<T>): Observable<T> {
  * Pipeable version of ngZoneLeaveObservable
  *****/
 ngZoneLeave<T>(): MonoTypeOperatorFunction<T> {
-  return inpus$ => this.ngZoneLeaveObservable(inpus$);
+  return this.ngZoneLeaveObservable;
 }
 ````
