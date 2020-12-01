@@ -1,5 +1,11 @@
 #The startWithDefer Operator
 
+### Depricated
+
+Use [startWithStream](startWithStream.md) instead.
+
+----
+
 This is a version of startWith that generates the first value at the time of subscription rather than the time of creation. This is useful if you want each new subscriber to get a value based on the (possibly changing) state of the program. 
 
 ```JavaScript
