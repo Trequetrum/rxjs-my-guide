@@ -3,6 +3,7 @@ What I've learned about RxJS so far
 
 Table of Contents:
 - [Introduction](Intro.md)
+- [Basics](Basics.md)
 - custom Observables
   - [Stopwatch](Stopwatch.md)
 - custom Operators
