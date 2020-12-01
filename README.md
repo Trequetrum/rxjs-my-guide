@@ -8,7 +8,8 @@ Table of Contents:
   - [Stopwatch](Stopwatch.md)
 - custom Operators
   - [catchComplete](catchComplete.md)
-  - [startWithDefer](startWithDefer.md)
+  - [startWithStream](startWithStream.md)
+  - [~startWithDefer~](startWithDefer.md)
   - [ngZone run/runOutside](ngZoneOperators.md)
 - Mini-Projects
   - [Managing Observable Subscriptions with Synchronous Streams](Mosss.md)
