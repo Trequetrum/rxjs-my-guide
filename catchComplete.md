@@ -8,8 +8,8 @@ function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> 
   return s => new Observable(observer => {
     let iSub: Subscription;
     const oSub = s.subscribe({
-      next: x => observer.next(x),
-      error: err => observer.error(err),
+      next: observer.next.bind(observer),
+      error: observer.error.bind(observer),
       complete: () => {
         iSub = fn().subscribe(observer);
       }
@@ -24,6 +24,7 @@ function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> 
 
 ## Updated Implementation:
 
+`catchComplete` acts as a pipeable `concat` operator where the next stream isn't generated until the current stream completes. This is actually something we can compose in one line using `concat` and `defer`.
 
 ```JavaScript
 function catchComplete<T, R>(fn: () => Observable<R>): OperatorFunction<T, T|R> {
