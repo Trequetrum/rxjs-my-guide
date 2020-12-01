@@ -20,7 +20,7 @@ A stream of the current username and future updates of that name. Since we don't
 
 ```JavaScript
 function getUserName(): Observable<string> {
-	return this.userNameUpdates$.pipe(
+  return this.userNameUpdates$.pipe(
     startWithDefer(() => this.currentUserName)
   );
 }
