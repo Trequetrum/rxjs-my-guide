@@ -46,11 +46,11 @@ The output is this object:
 
 ```JSON
 {
-  firstCall: 981,
-  secondCall: 11,
-  thirdCall: 8080,
-  fourthCall: 0,
-  fifthCall: 981
+  "firstCall": 981,
+  "secondCall": 11,
+  "thirdCall": 8080,
+  "fourthCall": 0,
+  "fifthCall": 981
 }
 ```
 
