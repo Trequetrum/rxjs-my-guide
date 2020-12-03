@@ -44,7 +44,7 @@ fakeHttpCall().pipe(
 
 The output is this object:
 
-```JavaScript
+```JSON
 {
   firstCall: 981,
   secondCall: 11,
