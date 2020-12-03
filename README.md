@@ -4,9 +4,11 @@ What I've learned about RxJS so far
 Table of Contents:
 - [Introduction](Intro.md)
 - [Basics](Basics.md)
-- custom Observables
+- Patterns:
+  - [Consecutive HTTP Calls](Chttpcp.md)
+- Custom Observables
   - [Stopwatch](Stopwatch.md)
-- custom Operators
+- Custom Operators
   - [catchComplete](catchComplete.md)
   - [startWithStream](startWithStream.md)
   - [~startWithDefer~](startWithDefer.md)
