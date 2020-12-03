@@ -22,7 +22,9 @@ function fakeHttpCall(num = 0): Observable<number> {
     delay(1000)
   );
 }
-
+```
+Here's the pattern at work:
+```JavaScript
 fakeHttpCall().pipe(
   map(res => ({firstCall: res})),
   switchMap(oby => fakeHttpCall(oby.firstCall).pipe(
