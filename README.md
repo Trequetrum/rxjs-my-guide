@@ -9,6 +9,7 @@ Table of Contents:
 - Custom Observables
   - [Stopwatch](Stopwatch.md)
 - Custom Operators
+  - [filterFirst](filterFirst.md)
   - [catchComplete](catchComplete.md)
   - [startWithStream](startWithStream.md)
   - [~startWithDefer~](startWithDefer.md)
