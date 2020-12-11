@@ -74,7 +74,7 @@ fakeHttpCall().pipe(
 ```
 The output is 5 objects one after another:
 
-```JSON
+```JavaScript
 {call: 1, resp: 981}
 {call: 2, resp: 11}
 {call: 3, resp: 8080}
