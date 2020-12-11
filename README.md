@@ -3,7 +3,8 @@ What I've learned about RxJS so far
 
 Table of Contents:
 - [Introduction](Intro.md)
-- [Basics](Basics.md)
+- [Kinda Like Arrays](Silaa.md)
+- [Memory Management](MemoryManagement.md)
 - Patterns:
   - [Consecutive HTTP Calls](Chttpcp.md)
 - Custom Observables
