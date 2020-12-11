@@ -65,14 +65,19 @@ The final map is to align with the output above, but it's pretty unessesary.
 ```JavaScript
 fakeHttpCall().pipe(
   expand(x => fakeHttpCall(x)),
-  take(5),
-  toArray(),
-  map(arr => ({
-    firstCall: arr[0],
-    SecondCall: arr[1],
-    thirdCall: arr[2],
-    fourthCall: arr[3],
-    fifthCall: arr[4]
-  }))
+  map((x,i) => ({
+    call: i+1,
+    resp: x
+  })),
+  take(5)
 ).subscribe(console.log);
+```
+The output is 5 objects one after another:
+
+```JSON
+{call: 1, resp: 981}
+{call: 2, resp: 11}
+{call: 3, resp: 8080}
+{call: 4, resp: 0}
+{call: 5, resp: 981}
 ```
