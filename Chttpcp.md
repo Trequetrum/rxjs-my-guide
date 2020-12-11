@@ -60,7 +60,7 @@ The output is this object:
 }
 ```
 
-While the output is nice, you can see how nested switchMap/mergeMap/ect becomes harder to follow. Here, each call is simple and how each rresponse is used is simple, but imagine this filled out with complex buisness/transformation logic and you can imagine the headache this sort of call structure creates.
+While the output is nice, you can see how nested `switchMap`/`mergeMap`/`ect` becomes harder to follow. Here, each call is simple and how each response is used is simple, but imagine this filled out with complex buisness/transformation logic and you can imagine the headache this sort of call structure creates.
 
 Deeply nested functions are notoriously difficult to debug in JavaScript so the extra effort of mapping into intermediate objects to hold the values you need in the next step (rather than nesting and getting intermediate values via functional closure) is well worth the effort.
 
