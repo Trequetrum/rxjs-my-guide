@@ -2,7 +2,9 @@
 
 Here I've created a hugely simplified HTTP call pattern. Each call requires the result from the previous call and each call's result is important to the final result. `fakeHTTPCall` returns a number after a second. 
 
-This pattern can be adapted to arbitrarily complex calls, but the take-away is the `call.pipe(map(new => ({...old, new})))` pipeline. This stops you from nesting switchMap in order to keep earlier values via closure. 
+This pattern can be adapted to arbitrarily complex calls, but the take-away is the `call.pipe(map(new => ({...old, new})))` pipeline. This stops you from nesting mergeMap/switchMap in order to keep earlier values via closure. 
+
+Here's a fake httpCall:
 
 ```JavaScript
 function fakeHttpCall(num = 0): Observable<number> {
@@ -23,7 +25,47 @@ function fakeHttpCall(num = 0): Observable<number> {
   );
 }
 ```
+
+Here's how you might call this 5 times while using functional closure to keep each value until the end:
+
+```JavaScript
+fakeHttpCall().pipe(
+  switchMap(firstCall => fakeHttpCall(firstCall).pipe(
+    switchMap(secondCall => fakeHttpCall(secondCall).pipe(
+      switchMap(thirdCall => fakeHttpCall(thirdCall).pipe(
+        switchMap(fourthCall => fakeHttpCall(fourthCall).pipe(
+          map(fifthCall => ({
+            firstCall,
+            secondCall,
+            thirdCall,
+            fourthCall,
+            fifthCall
+          }))
+        ))
+      ))
+    ))
+  ))
+).subscribe(console.log);
+```
+
+The output is this object:
+
+```JSON
+{
+  "firstCall": 981,
+  "secondCall": 11,
+  "thirdCall": 8080,
+  "fourthCall": 0,
+  "fifthCall": 981
+}
+```
+
+While the output is nice, you can see how nested switchMap/mergeMap/ect becomes harder to follow. Here, each call is simple and how each rresponse is used is simple, but imagine this filled out with complex buisness/transformation logic and you can imagine the headache this sort of call structure creates.
+
+Deeply nested functions are notoriously difficult to debug in JavaScript so the extra effort of mapping into intermediate objects to hold the values you need in the next step (rather than nesting and getting intermediate values via functional closure) is well worth the effort.
+
 Here's the pattern at work:
+
 ```JavaScript
 fakeHttpCall().pipe(
   map(res => ({firstCall: res})),
@@ -42,7 +84,7 @@ fakeHttpCall().pipe(
 ).subscribe(console.log);
 ```
 
-The output is this object:
+The output is the exact same as before:
 
 ```JSON
 {
@@ -53,6 +95,8 @@ The output is this object:
   "fifthCall": 981
 }
 ```
+
+As you can see, with intermediate objects, we don't require the call stack or functional closures to hold old values. We carry forward only what we need. It's also marginally faster as the runtime isn't required to travel up the call stack looking for variables. Really though, you should do it because it's cleaner, maintainable, and extendable and **not** in order to optimize early.
 
 ----
 
