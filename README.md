@@ -5,6 +5,7 @@ Table of Contents:
 - [Introduction](Intro.md) (WIP)
 - [Kinda Like Arrays](Silaa.md)
 - [Creating Observables](Creating.md) (WIP)
+- [Never Nest Subscriptions](Nns.md) (WIP)
 - [Memory Management](MemoryManagement.md)
 - Patterns:
   - [Consecutive HTTP Calls](Chttpcp.md)
