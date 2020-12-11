@@ -8,6 +8,8 @@ Here we'll look at some of the reasons and ways in which people nest subscriptio
 
 ---
 
+An Aside:
+
 > In cases where your subscribed observable emits once and completes (like an http request), switchMap and mergeMap produce the same output. switchMap is often recommended over mergeMap in these cases. The reasons range from debugging memory leaks, to marginal performance, to what other developers expect.
 >
 > For simplicity's sake, I've ignored that here and used mergeMap in all cases.
@@ -45,7 +47,7 @@ doSomething().subscribe(something => {
 
 This is bad and you should feel ashamed. No, it’s not that bad but it is a code smell. Too much of this sort of thing and your code-base starts to become a maze of callbacks. They’re hard to debug and the cognitive load of maintaining and extending your program becomes considerable after a few short months of development. Never mind being part of a bigger team and managing code reviews.
 
-Here’s how you write it without a nearest subscription:
+Here’s how you write it without a nested subscription:
 
 ```JavaScript
 doSomething().pipe(
@@ -80,9 +82,9 @@ You can almost always just return the stream you were going to subscribe to insi
 });
 ```
 
-Here, you need access to both `something` and `somethingElse` inside the callback. With nestedsubscriptions you can rely on functional clsure to hold those values for you. How can you get those into your subscription otherwise?
+Here, you need access to both `something` and `somethingElse` inside the callback. With nested subscriptions you can rely on functional closure to hold those values for you. How can you get those into your subscription otherwise?
 
-Well, the idiomatic way to do this is to map each response that you require in the final subscribe into a object, array, map, or other data structure that the subscription callback can consume.
+Well, the idiomatic way to do this is to map each response that you require in the final subscribe into an object, array, map, or other data structure that the subscription callback can consume.
 
 ```JavaScript
 doSomething().pipe(
