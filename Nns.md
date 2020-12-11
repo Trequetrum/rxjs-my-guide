@@ -100,9 +100,7 @@ doSomething().pipe(
 
 This actually looks more complicated than just nesting subscriptions at first glance. The power, of course is that you can extend this into a very long series of calls without adding any additional complexity. Continuing to nest subscriptions forever doesn't scale.
 
-If you want to see this done with more calls as a series of `switchMap`, I write about how to solve this problem as part of a pattern here: {The Consecutive HTTP Call Pattern
-}(Chttpcp.md
-)
+If you want to see this done with more calls as a series of `switchMap`, I write about how to solve this problem as part of a pattern here: [The Consecutive HTTP Call Pattern](Chttpcp.md)
 
 ### Dealing with `for`/`forEach` Loops
 
