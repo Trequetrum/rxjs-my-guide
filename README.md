@@ -1,7 +1,11 @@
 # RxJS-MyGuide
 What I've learned about RxJS so far
 
-Table of Contents:
+## Preamble
+
+There are many RxJS articles and guides out there. This one is being written as a bit of a fresh perspective. It isn’t comprehensive and it doesn’t guide a user from knowing nothing. It just hits topics that interested me and which took a lot of self-discovery to fully understand.
+
+### Table of Contents:
 - [Introduction](Intro.md) (WIP)
 - [Kinda Like Arrays](Silaa.md)
 - [Creating Observables](Creating.md) (WIP)
