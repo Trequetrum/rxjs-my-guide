@@ -95,7 +95,28 @@ The story, however, doesn't stop just yet. This stream is composed of more than 
 
 When `mergeMap` is unsubscribed, it unsubscribes from all it’s inner observables (`interval-1` and `interval-2`). Normally, it also unsubscribes from its source observable (in this case, that’s `of(1,2)`), but this time the source observable completed already.
 
-In this way, each operator knows what it needs to do in order to keep your code clean and free of memory leaks.
+Interval stops emitting once unsubscribed. It's a creation operator and doesn't/can't have any source oservables to unsubscribe to. So they're pretty simple to manage.
+
+In this way, each operator knows what it needs to do in order to keep your code clean and free of memory leaks. This example is pretty straight forward. `MergeMap` is the most complex operator in this pipeline as it:
+
+- Manages 3 observables: A source observable and two emissions from the source creating  2 new inner observables (`interval-1` and `interval-2`)
+- If unsubscribed, must unsubscribe from all managed observables that are still active.
+- If any of the 3 observables error, the other two must be unsubscribed (if active) and the error emitted
+- If the source completes, it must be ready to complete once the inner observables both complete.
+
+If you have 5 mergeMaps back-to-back
+
+```JavaScript
+stream.pipe(
+  mergeMap(/** something **/),
+  mergeMap(/** something-else **/),
+  mergeMap(/** something-fun **/),
+  mergeMap(/** something-wierd **/),
+  mergeMap(/** something-redundant **/)
+)
+```
+
+They can each blindly worry just about their inner and source observables and manage unsubscribe calls properly and the whole chain of events is well managed. This is all part of the magic of RxJS. It’s not just mergeMap that does this, every operator does. So as you compose operators and know that the composed operators continue to keep these properties.
 
 ### Example Memory Leak
 
