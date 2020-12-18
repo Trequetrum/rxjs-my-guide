@@ -115,8 +115,10 @@ function createStopwatch(control: Observable<string>, interval = 1000): Observab
 
 ### Create a stopwatch as an object
 
+If the control stream is going to be a subject, this is a good way to create the stopwatch.
+
 ```JavaScript
-function getStopWatch(interval: number): {
+function getStopWatch(interval: number = 1000): {
   control$: Subject<string>, 
   display$: Observable<number>
 } {
@@ -126,6 +128,17 @@ function getStopWatch(interval: number): {
     display$: createStopwatch(control$, interval)
   }
 }
+```
+
+Stopwatch Object in Use:
+```JavaScript
+const watch = getStopWatch();
+watch.display$.subscribe(/*Numbers emitted here every interval once started by control$*/);
+watch.control$.next("START");
+watch.control$.next("STOP");
+watch.control$.next("RESET");
+// Completing the control cleans up everything
+watch.control$.complete();
 ```
 
 ### StopWatch in Use
