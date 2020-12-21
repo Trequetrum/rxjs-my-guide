@@ -17,14 +17,15 @@ function prefer<R>(...observables: Observable<R>[]): Observable<R>{
 
     observables
       .map(stream => publish()(stream))
-      .forEach((stream, index) => {
+      .map((stream, index) => {
         subscrptions.push(stream.subscribe((payload: R) => {
           observer.next(payload);
           unsub(index + 1);
           subscrptions.length = index + 1;
         }));
-        stream.connect();
-      });
+        return stream;
+      })
+      .forEach(stream => stream.connect());
 
     return { unsubscribe: () => unsub() }
   })
