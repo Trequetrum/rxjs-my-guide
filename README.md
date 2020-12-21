@@ -20,6 +20,9 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [catchComplete](catchComplete.md)
   - [startWithStream](startWithStream.md)
   - [~startWithDefer~](startWithDefer.md)
+  - [delayWhile](delayWhile.md)
+  - [cascadeMerge](cascadeMerge.md)
+  - [prefer](prefer.md)
   - [ngZone run/runOutside](ngZoneOperators.md)
 - Mini-Projects
   - [Managing Observable Subscriptions with Synchronous Streams](Mosss.md)
