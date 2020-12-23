@@ -8,7 +8,7 @@ This works very much like exhaustMap, except it buffers values instead of discar
 
 This version creates a custom observable that buffers all values from the source and sets a behaviour subject (`idle`) true/false, so that the next call to `project: () => Observable` will never start until the previous one completes.
 
-There is a lot that could have been done here to be more concise and readable, but it turns out there's a better appraoch to doing this. I've left this here for posterity and because I liked the way it buffered values. 
+There is a lot that could have been done here to be more concise and readable, but it turns out there's a better approach to doing this. I've left this here for posterity and because I liked the way it buffered values. 
 
 ```JavaScript
 function bufferedExhaustMap<T,R>(
@@ -81,7 +81,7 @@ Aside: In the function parameters, ObservableInput works with an Array, an array
 
 ### Second Version
 
-This version is much nicer. For one, it's entirely functional composition using RxJS operators. Much of the work in the previous version was to make sure the operator cleaned up after itself. That's not a consern since we're not custructing an observable from scratch.
+This version is much nicer. For one, it's entirely functional composition using RxJS operators. Much of the work in the previous version was to make sure the operator cleaned up after itself. That's not a concern since we're not constructing an observable from scratch.
 
 Another huge difference between the two versions is that in this newer version we subscribe to the source over and over and over again. This is done so that `bufferWhen` can do its job (We built a custom buffer in the previous version). To do this without causing unexpected behaviour, we have to multicast the source. This is done with `share`.
 
@@ -135,7 +135,7 @@ const nextBufferTime = () => merge(
   shared.pipe(take(minBufferCount)),
   // Wait minBufferLength milliseconds and then complete
   timer(minBufferLength),
-  // Wait until idle emits true, then copmlete
+  // Wait until idle emits true, then complete
   idle.pipe(first(v => v))
 ).pipe(
   // Ignore all values, we only care about when they complete
@@ -144,5 +144,4 @@ const nextBufferTime = () => merge(
   endWith(1)
 );
 ```
-
 
