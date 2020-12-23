@@ -15,17 +15,20 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [Consecutive HTTP Calls](Chttpcp.md)
 - Custom Observables
   - [Stopwatch](Stopwatch.md)
+  - [TransformSubject](transformSubject.md) (WIP)
 - Custom Operators
   - [filterFirst](filterFirst.md)
-  - [catchComplete](catchComplete.md)
+  - [catchComplete](catchComplete.md) (v2)
   - [startWithStream](startWithStream.md)
   - [~startWithDefer~](startWithDefer.md)
   - [delayWhile](delayWhile.md)
   - [cascadeMerge](cascadeMerge.md)
   - [prefer](prefer.md)
+  - [bufferedExhaustMap](bufferedExhaustMap.md) (v2)
   - [ngZone run/runOutside](ngZoneOperators.md)
 - Mini-Projects
   - [Managing Observable Subscriptions with Synchronous Streams](Mosss.md)
 
 ### Glossary:
   - **WIP**: Work in Progress
+  - **V{n}**: There are n relatively distinct/interesting versions
