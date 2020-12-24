@@ -26,7 +26,7 @@ function bufferedExhaustMap<T,R>(
   minBufferLength = 0, 
   minBufferCount = 1
 ): OperatorFunction<T,R> {
-  return s => new Observable(observer => {
+  return source => new Observable(observer => {
 
     const idle = new BehaviorSubject<boolean>(true);
     const setIdle = (b) => () => idle.next(b);
@@ -66,7 +66,7 @@ function bufferedExhaustMap<T,R>(
       ))
     ).subscribe(observer);
 
-    const subSource = s.subscribe({
+    const subSource = source.subscribe({
       next: buffer.nextVal,
       complete: observer.complete.bind(observer),
       error: e => {
@@ -109,10 +109,10 @@ function bufferedExhaustMap<T,R>(
   minBufferLength = 0, 
   minBufferCount = 1
 ): OperatorFunction<T,R> {
-  return s => defer(() => {
+  return source => defer(() => {
     const idle = new BehaviorSubject(true);
     const setIdle = (b) => () => idle.next(b);
-    const shared = s.pipe(share());
+    const shared = source.pipe(share());
 
     const nextBufferTime = () => merge(
       shared.pipe(take(minBufferCount)),
