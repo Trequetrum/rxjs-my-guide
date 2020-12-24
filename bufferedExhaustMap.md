@@ -173,20 +173,4 @@ It does this by merging 3 observables and only completing once all three observa
  - *Second condition*: A timer of `minBufferLength` has elapsed.
  - *Third condition*: No projected observable is currently active (`idle == true`).
 
-```JavaScript
-const nextBufferTime = () => merge(
-  // Take minBufferCount from source then complete
-  shared.pipe(take(minBufferCount)),
-  // Wait minBufferLength milliseconds and then complete
-  timer(minBufferLength),
-  // Wait until idle emits true, then complete
-  idle.pipe(first(v => v))
-).pipe(
-  // Ignore all values, we only care about when they complete
-  filter(_ => false),
-  // Emit 1 after merged observables complete 
-  endWith(1)
-);
-```
-
 
