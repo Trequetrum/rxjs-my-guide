@@ -107,28 +107,58 @@ Here's the operator:
 function bufferedExhaustMap<T,R>(
   project: (v:T[]) => ObservableInput<R>, 
   minBufferLength = 0, 
-  minBufferCount = 1
+  minBufferCount = 1,
+  concurrent = 1
 ): OperatorFunction<T,R> {
   return source => defer(() => {
-    const idle = new BehaviorSubject(true);
-    const setIdle = (b) => () => idle.next(b);
+
+    /***
+     * Outputs/emits the numberical difference between how often
+     * start and end have been called. Tracks concurrently running
+     * instances o the projected observable.
+     ***/
+    const projectCount = (() => {
+      const projecting = new Subject<boolean>();
+      return {
+        output: projecting.pipe(
+          scan((acc, curr) => curr? ++acc : --acc, 0),
+          startWith(0)
+        ),
+        start: () =>  projecting.next(true),
+        end: () =>  projecting.next(false)
+      }
+    })();
+
+    // Multicast the source so we can use it to manage our buffer
     const shared = source.pipe(share());
 
+    // observable that emits a 1 when the buffer 
+    // should be cleared, then completes.
     const nextBufferTime = () => merge(
+      // Take minBufferCount from source then complete
       shared.pipe(take(minBufferCount)),
+      // Wait minBufferLength milliseconds and then complete
       timer(minBufferLength),
-      idle.pipe(first(v => v))
+      // Wait current projected observables drops below the given
+      // concurrent count.
+      projectCount.output.pipe(first(count => count < concurrent))
     ).pipe(
+      // Ignore all values, only care about when they complete
       filter(_ => false),
+      // Emit 1 after merged observables complete
       endWith(1),
-      tap(setIdle(false))
+      // projectCount.start before clearing buffer
+      tap(projectCount.start)
     );
 
     return shared.pipe(
       bufferWhen(nextBufferTime),
+      // map (v:T[]) => ObservableInput<R>
       map(project),
+      // Turn ObservableInput into Observable, then 
+      // projectCount.end once it's complete
       mergeMap(projected => from(projected).pipe(
-        finalize(setIdle(true))
+        finalize(projectCount.end)
       ))
     );
   });
