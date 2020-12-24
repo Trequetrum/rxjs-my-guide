@@ -4,6 +4,16 @@ This operator buffers values based on a minimum buffer length (time in milliseco
 
 This works very much like exhaustMap, except it buffers values instead of discarding values while waiting for the current inner (projected) observable to complete.
 
+## When To Use
+
+This is a way of dealing with backpressure. If the complexity of some process is less than linear (like the binary search algorithm), then a larger input (buffer in this case) is more efficient. The most efficient thing you can do is run the process once on the entire input data set. Unfortunately, if the data is arriving over the course of an hour, day, or forever, then you can't wait for the entire input before starting to process. Especially in long running processes (a server, perhaps), the intermediate values are important.
+
+Even if you're just interacting with a server from a javascript client in a browser (a common, Angular/Vue/React use case), if that server provides a batch request API, then you need a way to know when to batch a request to the server.
+
+A common way to deal with this is to buffer values for a set amount of time or to buffer a certain number of values. The RxJS operators `bufferCount` and `bufferTime` can do that for you. The problem is that if the buffer is too small, you may end up with uncontrollable back pressure but if the buffer is too big, you lose responsiveness.
+
+`bufferedExhaustMap` lets you set a small reactive buffer that dynamically grows based on how long the mapped inner observable takes to complete. That inner observable can encompass a computationally heavy process, read/write to disk, and/or Http call. `bufferedExhaustMap` will buffer until the call is complete.
+
 ### First Version
 
 This version creates a custom observable that buffers all values from the source and sets a behaviour subject (`idle`) true/false, so that the next call to `project: () => Observable` will never start until the previous one completes.
@@ -90,6 +100,10 @@ Multicasting comes with a cost, but our custom buffer was a subject which also m
 Here's the operator:
 
 ```JavaScript
+/***
+ * Buffers, then projects buffered source values to an Observable which is merged in 
+ * the output Observable only if the previous projected Observable has completed.
+ ***/
 function bufferedExhaustMap<T,R>(
   project: (v:T[]) => ObservableInput<R>, 
   minBufferLength = 0, 
@@ -125,9 +139,9 @@ Perhaps the most complex bit is the `nextBufferTime` factory function. It create
 
 It does this by merging 3 observables and only completing once all three observables are complete. In this way, an inner observable completing counts as a condition being met.
 
-- First condition: The source has emitted minBufferCount values. 
-- Second condition: A timer of minBufferLength has elapsed.
-- Third condition: No projected observable is currently active (idle == true).
+ - *First condition*: The source has emitted `minBufferCount` values. 
+ - *Second condition*: A timer of `minBufferLength` has elapsed.
+ - *Third condition*: No projected observable is currently active (`idle == true`).
 
 ```JavaScript
 const nextBufferTime = () => merge(
@@ -144,4 +158,5 @@ const nextBufferTime = () => merge(
   endWith(1)
 );
 ```
+
 
