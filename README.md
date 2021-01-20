@@ -16,16 +16,17 @@ There are many RxJS articles and guides out there. This one is being written as 
 - Custom Observables
   - [Stopwatch](Stopwatch.md)
   - [TransformSubject](transformSubject.md) (WIP)
-- Custom Operators
+- Custom Static Operators
+  - [cascadeMerge](cascadeMerge.md)
+  - [partitionOn](partitionOn.md)
+  - [prefer](prefer.md)
+- Custom Pipeable Operators
   - [filterFirst](filterFirst.md)
   - [catchComplete](catchComplete.md) (v2)
   - [catchEmpty](catchEmpty.md)
   - [startWithStream](startWithStream.md)
   - [~startWithDefer~](startWithDefer.md)
   - [delayWhile](delayWhile.md)
-  - [cascadeMerge](cascadeMerge.md)
-  - [partitionOn](partitionOn.md)
-  - [prefer](prefer.md)
   - [bufferedExhaustMap](bufferedExhaustMap.md) (v2)
   - [ngZone run/runOutside](ngZoneOperators.md)
 - Mini-Projects
