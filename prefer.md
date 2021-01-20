@@ -2,7 +2,7 @@
 
 Takes a list of observables and emits values only from the observables earlier in the list than any previous emissions.
 
-This is useful if there are many sources for a piece of data and you want to preserve the most trusted source and use others as a fallback. 
+This is useful if there are many sources for a piece of data and you want to prefer the most trusted source and use others as a fallback. 
 
 ```JavaScript
 function prefer<R>(...observables: Observable<R>[]): Observable<R>{
