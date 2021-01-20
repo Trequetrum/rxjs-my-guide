@@ -21,6 +21,7 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [partitionOn](partitionOn.md)
   - [prefer](prefer.md)
 - Custom Pipeable Operators
+  - [log](tapLog.md)
   - [arrayMap](arrayMap.md)
   - [intervalArray](intervalArray.md)
   - [filterFirst](filterFirst.md)
