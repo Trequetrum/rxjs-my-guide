@@ -31,6 +31,7 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [~startWithDefer~](startWithDefer.md)
   - [delayWhile](delayWhile.md)
   - [bufferedExhaustMap](bufferedExhaustMap.md) (v2)
+  - [priorityDebounceTime](priorityDebounceTime.md)
   - [ngZone run/runOutside](ngZoneOperators.md)
 - Mini-Projects
   - [Managing Observable Subscriptions with Synchronous Streams](Mosss.md)
