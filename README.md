@@ -22,6 +22,7 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [prefer](prefer.md)
 - Custom Pipeable Operators
   - [arrayMap](arrayMap.md)
+  - [intervalArray](intervalArray.md)
   - [filterFirst](filterFirst.md)
   - [catchComplete](catchComplete.md) (v2)
   - [catchEmpty](catchEmpty.md)
