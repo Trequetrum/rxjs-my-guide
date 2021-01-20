@@ -24,6 +24,7 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [~startWithDefer~](startWithDefer.md)
   - [delayWhile](delayWhile.md)
   - [cascadeMerge](cascadeMerge.md)
+  - [partitionOn](partitionOn.md)
   - [prefer](prefer.md)
   - [bufferedExhaustMap](bufferedExhaustMap.md) (v2)
   - [ngZone run/runOutside](ngZoneOperators.md)
