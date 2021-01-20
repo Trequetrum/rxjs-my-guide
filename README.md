@@ -21,6 +21,7 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [partitionOn](partitionOn.md)
   - [prefer](prefer.md)
 - Custom Pipeable Operators
+  - [arrayMap](arrayMap.md)
   - [filterFirst](filterFirst.md)
   - [catchComplete](catchComplete.md) (v2)
   - [catchEmpty](catchEmpty.md)
