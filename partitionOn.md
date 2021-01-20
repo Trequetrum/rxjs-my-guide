@@ -5,10 +5,7 @@ This operates very similarly to how `partition` works, only it can create any nu
 
 It creates a partitioned stream for each value where a passed predicate returns true and ignores all values where none of the predicates return true.
 
-/***
- * Create a partitioned stream for each value where a passed
- * predicate returns true
- ***/
+```JavaScript
 function partitionOn<T>(
   input$: Observable<T>,
   predicates: ((v: T) => boolean)[]
@@ -31,3 +28,4 @@ function partitionOn<T>(
 
   return partitions.map(prt => prt.stream.asObservable());
 }
+```
