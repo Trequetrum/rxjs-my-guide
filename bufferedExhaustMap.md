@@ -186,7 +186,7 @@ function bufferedExhaustMap<T, R>(
       // Multicast the source so we can use it to manage our buffer
       const shared = source.pipe(share());
 
-      // observable that emits a 1 when the buffer
+      // observable that emits when the buffer
       // should be cleared, then completes.
       const nextBufferTime = () =>
         forkJoin(
