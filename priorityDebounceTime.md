@@ -25,9 +25,8 @@ function priorityDebounceTime<T>(
           priorityTimeStamp.set(v[priorityStr], Date.now());
           return timer(dbTime).pipe(
             timestamp(),
-            filter(
-              ({ timestamp }) =>
-                timestamp - priorityTimeStamp.get(v[priorityStr]) >= dbTime
+            filter(({ timestamp }) =>
+              timestamp - priorityTimeStamp.get(v[priorityStr]) >= dbTime
             ),
             mapTo(v)
           );
