@@ -4,7 +4,7 @@ Takes arrays emitted by the source and spaces out their values by the given inte
 
 ``` JavaScript
 function intervalArray<T>(intervalTime = 1000): OperatorFunction<T[], T> {
-  return s => s.pipe(
+  return pipe(
     concatMap((v:T[]) => concat(
       ...v.map((value:T) => EMPTY.pipe(
         delay(intervalTime),
