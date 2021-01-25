@@ -17,21 +17,20 @@ function priorityDebounceTime<T>(
   dbTime: number,
   priorityStr = "priority"
 ): MonoTypeOperatorFunction<T> {
-  return s =>
-    defer(() => {
-      const priorityTimeStamp = new Map<string, number>();
-      return s.pipe(
-        mergeMap(v => {
-          priorityTimeStamp.set(v[priorityStr], Date.now());
-          return timer(dbTime).pipe(
-            timestamp(),
-            filter(({ timestamp }) =>
-              timestamp - priorityTimeStamp.get(v[priorityStr]) >= dbTime
-            ),
-            mapTo(v)
-          );
-        })
-      );
-    });
+  return s => defer(() => {
+    const priorityTimeStamp = new Map<string, number>();
+    return s.pipe(
+      mergeMap(v => {
+        priorityTimeStamp.set(v[priorityStr], Date.now());
+        return timer(dbTime).pipe(
+          timestamp(),
+          filter(({ timestamp }) =>
+            timestamp - priorityTimeStamp.get(v[priorityStr]) >= dbTime
+          ),
+          mapTo(v)
+        );
+      })
+    );
+  });
 }
 ```
