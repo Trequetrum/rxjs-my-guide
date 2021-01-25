@@ -8,21 +8,38 @@ That being said, I’m sure there’s some fun uses for a pipeable way to enter 
 constructor(private ngZone: NgZone) { }
 
 /*****
+ * Wrap every emission of an observable (next, complete, & error)
+ * With a callback function, effectively removing the invocation
+ * of these emissions from the observable to the callback.
+ *
+ * This isn't really too useful except for as a helper function for
+ * our NgZone Operators where we leverage this wrapper to run an
+ * observable in a specific JavaScript environment.
+ *****/
+function callBackWrapperObservable<T>(
+  input$: Observable<T>, 
+  callback: (fn: (v) => void) => void
+): Observable<T> {
+  const callBackBind = fn => (v = undefined) => callback(() => fn(v))
+  return new Observable<T>(observer => {
+    const sub = input$.subscribe({
+      next: callBackBind(observer.next.bind(observer)),
+      error: callBackBind(observer.error.bind(observer)),
+      complete: callBackBind(observer.complete.bind(observer))
+    });
+    return { unsubscribe: () => sub.unsubscribe() };
+  });
+}
+
+/*****
  * If we've left the angular zone, we can use this to re-enter
  * 
  * If a third party library returns a promise/observable, we may no longer be in
  * the angular zone (This is the case for the Google API), so now we can convert such
  * observables into ones which re-enter the angular zone
  *****/
-ngZoneEnterObservable<T>(input$: Observable<T>): Observable<T> {
-  return new Observable<T>(observer => {
-    const sub = input$.subscribe({
-      next: val => this.ngZone.run(() => observer.next(val)),
-      error: err => this.ngZone.run(() => observer.error(err)),
-      complete: () => this.ngZone.run(() => observer.complete()),
-    });
-    return { unsubscribe: () => sub.unsubscribe() };
-  });
+function ngZoneEnterObservable<T>(input$: Observable<T>): Observable<T> {
+  return callBackWrapperObservable(input$, this.ngZone.run.bind(this.ngZone));
 }
 
 /*****
@@ -37,14 +54,7 @@ ngZoneEnter<T>(): MonoTypeOperatorFunction<T> {
  * angular change detection. 
  *****/
 ngZoneLeaveObservable<T>(input$: Observable<T>): Observable<T> {
-  return new Observable<T>(observer => {
-    const sub = input$.subscribe({
-      next: val => this.ngZone.runOutsideAngular(() => observer.next(val)),
-      error: err => this.ngZone.runOutsideAngular(() => observer.error(err)),
-      complete: () => this.ngZone.runOutsideAngular(() => observer.complete()),
-    });
-    return { unsubscribe: () => sub.unsubscribe() };
-  });
+  return callBackWrapperObservable(input$, this.ngZone.runOutsideAngular.bind(this.ngZone));
 }
 
 /*****
