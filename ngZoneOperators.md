@@ -39,7 +39,7 @@ callBackWrapperObservable<T>(
  * observables into ones which re-enter the angular zone
  *****/
 ngZoneEnterObservable<T>(input$: Observable<T>): Observable<T> {
-  return callBackWrapperObservable(input$, this.ngZone.run.bind(this.ngZone));
+  return this.callBackWrapperObservable(input$, this.ngZone.run.bind(this.ngZone));
 }
 
 /*****
@@ -54,7 +54,7 @@ ngZoneEnter<T>(): MonoTypeOperatorFunction<T> {
  * angular change detection. 
  *****/
 ngZoneLeaveObservable<T>(input$: Observable<T>): Observable<T> {
-  return callBackWrapperObservable(input$, this.ngZone.runOutsideAngular.bind(this.ngZone));
+  return this.callBackWrapperObservable(input$, this.ngZone.runOutsideAngular.bind(this.ngZone));
 }
 
 /*****
