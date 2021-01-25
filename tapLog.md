@@ -21,6 +21,6 @@ function logMsg(msg:string){
  * prepend a message before logging the current value to the console.
  */
 function log<T>(msg = ""): MonoTypeOperatorFunction<T> {
-  return s => s.pipe(tap(logMsg(msg)));
+  return pipe(tap(logMsg(msg)));
 }
 ```
