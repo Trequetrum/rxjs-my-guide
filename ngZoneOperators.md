@@ -16,7 +16,7 @@ constructor(private ngZone: NgZone) { }
  * our NgZone Operators where we leverage this wrapper to run an
  * observable in a specific JavaScript environment.
  *****/
-function callBackWrapperObservable<T>(
+callBackWrapperObservable<T>(
   input$: Observable<T>, 
   callback: (fn: (v) => void) => void
 ): Observable<T> {
@@ -38,7 +38,7 @@ function callBackWrapperObservable<T>(
  * the angular zone (This is the case for the Google API), so now we can convert such
  * observables into ones which re-enter the angular zone
  *****/
-function ngZoneEnterObservable<T>(input$: Observable<T>): Observable<T> {
+ngZoneEnterObservable<T>(input$: Observable<T>): Observable<T> {
   return callBackWrapperObservable(input$, this.ngZone.run.bind(this.ngZone));
 }
 
