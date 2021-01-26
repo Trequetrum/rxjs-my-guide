@@ -108,34 +108,37 @@ function bufferedExhaustMap<T, R>(
   minBufferCount = 1,
   concurrent = 1
 ): OperatorFunction<T, R> {
-  return source => defer(() => {
 
-    const projectCount = (() => {
-      const incOrDec = new Subject<boolean>();
-      return {
-        output: incOrDec.pipe(
-          scan((acc, curr) => (curr ? ++acc : --acc), 0),
-          startWith(0),
-          shareReplay(1)
-        ),
-        start: () => incOrDec.next(true),
-        end: () => incOrDec.next(false)
-      };
-    })();
+  function diffCounter(){
+    const incOrDec = new Subject<boolean>();
+    return {
+      onAvailable: incOrDec.pipe(
+        scan((acc, curr) => (curr ? ++acc : --acc), 0),
+        startWith(0),
+        shareReplay(1),
+        first(count => count < concurrent),
+        mapTo(true)
+      ),
+      start: (_ = null) => incOrDec.next(true),
+      end: (_ = null) => incOrDec.next(false)
+    };
+  }
+
+  return source => defer(() => {
+    const projectCount = diffCounter();
 
     const shared = source.pipe(share());
 
-    const nextBufferTime = () =>
-      forkJoin(
-        shared.pipe(take(minBufferCount)),
-        timer(minBufferLength),
-        projectCount.output.pipe(first(count => count < concurrent))
-      ).pipe(
-        tap(projectCount.start)
-      );
+    const nextBufferTime = () => forkJoin(
+      shared.pipe(take(minBufferCount+1)),
+      timer(minBufferLength),
+      projectCount.onAvailable
+    );
 
     return shared.pipe(
       bufferWhen(nextBufferTime),
+      delayWhen(() => projectCount.onAvailable),
+      tap(projectCount.start),
       map(project),
       mergeMap(projected => from(projected).pipe(
         finalize(projectCount.end))
@@ -159,67 +162,122 @@ It does this by merging 3 observables and only completing once all three observa
  * Buffers, then projects buffered source values to an Observable which is merged in
  * the output Observable only if the previous projected Observable has completed.
  ***/
-function bufferedExhaustMap<T, R>(
+function bufferedExhaustMap2<T, R>(
   project: (v: T[]) => ObservableInput<R>,
   minBufferLength = 0,
   minBufferCount = 1,
   concurrent = 1
 ): OperatorFunction<T, R> {
-  return source =>
-    defer(() => {
-      /***
-       * Outputs/emits the numberical difference between how often
-       * start and end have been called. In this instance it tracks
-       * concurrently running instances of the projected observable.
-       ***/
-      const projectCount = (() => {
-        const incOrDec = new Subject<boolean>();
-        return {
-          output: incOrDec.pipe(
-            scan((acc, curr) => (curr ? ++acc : --acc), 0),
-            startWith(0),
-            shareReplay(1)
-          ),
-          start: () => incOrDec.next(true),
-          end: () => incOrDec.next(false)
-        };
-      })();
 
-      // Multicast the source so we can use it to manage our buffer
-      const shared = source.pipe(share());
+  /***
+   * Helper function:
+   * 
+   * Creates obj that tracks the numberical difference between how often
+   * start() and end() have been called. In this instance it tracks
+   * concurrently running instances of the projected observable.
+   * 
+   * onAvailable emits true as soon as a new projected obervable
+   * slot is open.
+   ***/
+  function diffCounter(){
+    const incOrDec = new Subject<boolean>();
+    return {
+      onAvailable: incOrDec.pipe(
+        scan((acc, curr) => (curr ? ++acc : --acc), 0),
+        startWith(0),
+        shareReplay(1),
+        first(count => count < concurrent),
+        mapTo(true)
+      ),
+      start: (_ = null) => incOrDec.next(true),
+      end: (_ = null) => incOrDec.next(false)
+    };
+  }
 
-      // observable that emits when the buffer
-      // should be cleared, then completes.
-      const nextBufferTime = () =>
-        forkJoin(
-          // Take minBufferCount from source then complete
-          shared.pipe(take(minBufferCount)),
-          // Wait minBufferLength milliseconds and then complete
-          timer(minBufferLength),
-          // Wait current projected observables drops below the given
-          // concurrent count.
-          projectCount.output.pipe(first(count => count < concurrent))
-        ).pipe(
-          // projectCount.start before clearing buffer
-          tap(projectCount.start)
-        );
+  return source$ => defer(() => {
+    // Creates a new diffCounter
+    const projectCount = diffCounter();
+    // Multicast the source so we can use it to manage our buffer
+    const shared = source$.pipe(share());
+    
+    // observable that emits when the buffer
+    // should be cleared, then completes.
+    const nextBufferTime = () => forkJoin(
+      // Take minBufferCount from source then complete
+      shared.pipe(take(minBufferCount+1)),
+      // Wait minBufferLength milliseconds and then complete
+      timer(minBufferLength),
+      // Wait until a slot is available to run concurrent process
+      projectCount.onAvailable
+    );
 
-      return shared.pipe(
-        bufferWhen(nextBufferTime),
-        // map (v:T[]) => ObservableInput<R>
-        map(project),
-        // Turn ObservableInput into Observable, then
-        // projectCount.end once it's complete
-        mergeMap(projected => from(projected).pipe(
-          finalize(projectCount.end))
-        )
-      );
-    });
+    return shared.pipe(
+      bufferWhen(nextBufferTime),
+      // BufferWhen clears when source completes, we delay here to
+      // ensure we never go above our concurrent limits
+      delayWhen(() => projectCount.onAvailable),
+      // Signal the start of new projected observable
+      tap(projectCount.start),
+      // map (v:T[]) => ObservableInput<R>
+      map(project),
+      // Turn ObservableInput into Observable, then
+      // projectCount.end once it's complete
+      mergeMap(projected => from(projected).pipe(
+        finalize(projectCount.end))
+      )
+    );
+  });
 }
 ```
 
-# `bufferedExhaustMap` Example
+# `bufferedExhaustMap` usage
+### Description
 
+Here our batch process takes an array (batch) of numbers and always takes 5 seconds to add them all together and emit the result.
+
+We get a new number every 1/2second and we only want to 'compute' one batch of numbers at a time. We don't have any time restraints, but we'd like to add at least 6 numbers at a time. 
+
+### Implementation
+```JavaScript
+function batchSumNumbers(nums: number[]): Observable<number> {
+  return defer(() => {
+    console.log("Start Batch Process: ", nums);
+    return timer(5000).pipe(
+      mapTo(nums),
+      map(nums => nums.reduce((acc, curr) => acc + curr, 0)),
+      tap(val => console.log("> End Batch Process: ", val))
+    );
+  })
+}
+
+interval(500).pipe(
+  take(25),
+  bufferedExhaustMap2(batchSumNumbers, 0, 6),
+  map(val => Math.floor(val / 2))
+).subscribe(result => 
+  console.log(">>>>>>>>>>>> Result: " + result)
+);
+```
+
+### Output Produced:
+```HTML
+Start Batch Process: [0,1,2,3,4,5]
+> End Batch Process: 15
+>>>>>>>>>>>> Result: 7
+Start Batch Process: [6,7,8,9,10,11,12,13,14,15]
+> End Batch Process: 105
+>>>>>>>>>>>> Result: 52
+Start Batch Process: [16,17,18,19]
+> End Batch Process: 70
+>>>>>>>>>>>> Result: 35
+```
+
+Some things to notice: 
+- The first batch doesn't start until there are 6 numbers in the buffer since our min buffer count is 6.
+- The second batch has 10 numbers since our buffer kept filling over 6 while it waited for the previous batch to complete. 
+- Our final batch has only 4 numbers since the source completed and that clears the buffer while maintaining concurrency restrictions. 
+
+# A `bufferedExhaustMap` in the Wild Example
 
 So, our example is this: We're a gaming server that needs to keep a client updated on enemy movements. The vast majority of the time overhead of doing this is network time. It takes time for the message to be sent to the client and for a response to be received. One message with 200 enemy movements embedded is processed roughly as quickly as one message with 1 enemy movement embedded. The message with 200 enemy movements is slightly larger but negligible compared with the network header and routing information already being sent and processed regardless. 
 
