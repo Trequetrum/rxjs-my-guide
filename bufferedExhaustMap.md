@@ -130,7 +130,7 @@ function bufferedExhaustMap<T, R>(
     const shared = source.pipe(share());
 
     const nextBufferTime = () => forkJoin(
-      shared.pipe(take(minBufferCount+1)),
+      shared.pipe(take(minBufferCount), delay(0)),
       timer(minBufferLength),
       projectCount.onAvailable
     );
@@ -204,7 +204,7 @@ function bufferedExhaustMap2<T, R>(
     // should be cleared, then completes.
     const nextBufferTime = () => forkJoin(
       // Take minBufferCount from source then complete
-      shared.pipe(take(minBufferCount+1)),
+      shared.pipe(take(minBufferCount), delay(0)),
       // Wait minBufferLength milliseconds and then complete
       timer(minBufferLength),
       // Wait until a slot is available to run concurrent process
