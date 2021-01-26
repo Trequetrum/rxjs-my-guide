@@ -115,7 +115,8 @@ function bufferedExhaustMap<T, R>(
       return {
         output: incOrDec.pipe(
           scan((acc, curr) => (curr ? ++acc : --acc), 0),
-          startWith(0)
+          startWith(0),
+          shareReplay(1)
         ),
         start: () => incOrDec.next(true),
         end: () => incOrDec.next(false)
@@ -176,7 +177,8 @@ function bufferedExhaustMap<T, R>(
         return {
           output: incOrDec.pipe(
             scan((acc, curr) => (curr ? ++acc : --acc), 0),
-            startWith(0)
+            startWith(0),
+            shareReplay(1)
           ),
           start: () => incOrDec.next(true),
           end: () => incOrDec.next(false)
