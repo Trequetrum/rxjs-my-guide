@@ -162,7 +162,7 @@ It does this by merging 3 observables and only completing once all three observa
  * Buffers, then projects buffered source values to an Observable which is merged in
  * the output Observable only if the previous projected Observable has completed.
  ***/
-function bufferedExhaustMap2<T, R>(
+function bufferedExhaustMap<T, R>(
   project: (v: T[]) => ObservableInput<R>,
   minBufferLength = 0,
   minBufferCount = 1,
