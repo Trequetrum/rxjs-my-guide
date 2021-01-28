@@ -9,6 +9,7 @@ There are many RxJS articles and guides out there. This one is being written as 
 - [Introduction](Intro.md) (WIP)
 - [Kinda Like Arrays](Silaa.md)
 - [Creating Observables](Creating.md) (WIP)
+- [Understanding concatMap, mergeMap, & switchMap](Ucms.md)
 - [Never Nest Subscriptions](Nns.md) (WIP)
 - [Memory Management](MemoryManagement.md)
 - Patterns:
