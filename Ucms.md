@@ -10,7 +10,7 @@ We'll have 2 helper functions. They both use `intervalArray` (a customer operato
 /****
  * Emit 1, 2, 3, then complete: each 0.5 seconds apart
  ****/
-function numberStream(): Observable<number> {
+function n123Stream(): Observable<number> {
   return of([1,2,3]).pipe(
     intervalArray(500)
   );
@@ -36,17 +36,17 @@ The above mapping function (`numberToStream`), takes care of the **map** part of
 The following three snippits of code will all have different outputs:
 
 ```JavaScript
-numberStream().pipe(
+n123Stream().pipe(
   concatMap(numberToStream)
 ).subscribe(console.log);
 ```
 ```JavaScript
-numberStream().pipe(
+n123Stream().pipe(
   mergeMap(numberToStream)
 ).subscribe(console.log);
 ```
 ```JavaScript
-numberStream().pipe(
+n123Stream().pipe(
   switchMap(numberToStream)
 ).subscribe(console.log);
 ```
@@ -105,7 +105,7 @@ function intervalArray<T>(intervalTime = 1000): OperatorFunction<T[], T> {
 /****
  * Emit 1, 2, 3, then complete: each 0.5 seconds apart
  ****/
-function numberStream(): Observable<number> {
+function n123Stream(): Observable<number> {
   return of([1,2,3]).pipe(
     intervalArray(500)
   );
@@ -128,7 +128,7 @@ function numberToStream(num): Observable<number>{
  ****/
 concat(
   ...[concatMap, mergeMap, switchMap].map(
-    op => numberStream().pipe(
+    op => n123Stream().pipe(
       op(numberToStream),
       startWith(`${op.name}: `)
     )
