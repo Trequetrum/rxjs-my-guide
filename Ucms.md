@@ -87,6 +87,22 @@ Only the final observable ran to completion in this case. The first two only had
 
 ```JavaScript
 /****
+ * Pipeable Operator:
+ * Takes arrays emitted by the source and spaces out their
+ * values by the given interval time in milliseconds
+ ****/
+function intervalArray<T>(intervalTime = 1000): OperatorFunction<T[], T> {
+  return s => s.pipe(
+    concatMap((v: T[]) => concat(
+      ...v.map((value: T) => EMPTY.pipe(
+        delay(intervalTime),
+        startWith(value)
+      ))
+    ))
+  );
+}
+
+/****
  * Emit 1, 2, 3, then complete: each 0.5 seconds apart
  ****/
 function numberStream(): Observable<number> {
