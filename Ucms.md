@@ -127,15 +127,11 @@ function numberToStream(num): Observable<number>{
  * Run all three operators back-to-back
  ****
 concat(
-  ...[
-    {name: "concatMap", op: concatMap}, 
-    {name: "mergeMap", op: mergeMap}, 
-    {name: "switchMap", op: switchMap}
-  ].map(({name, op}) => defer(() => {
-    console.log(name + ": ");
-    return numberStream().pipe(
-      op(numberToStream)
-    );
-  }))
+  ...[concatMap, mergeMap, switchMap].map(
+    op => numberStream().pipe(
+      op(numberToStream),
+      startWith(`${op.name}: `)
+    )
+  )
 ).subscribe(console.log);
 ```
