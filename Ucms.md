@@ -125,7 +125,7 @@ function numberToStream(num): Observable<number>{
 
 /****
  * Run all three operators back-to-back
- ****
+ ****/
 concat(
   ...[concatMap, mergeMap, switchMap].map(
     op => numberStream().pipe(
