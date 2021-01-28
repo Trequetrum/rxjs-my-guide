@@ -27,7 +27,6 @@ function numberToStream(num): Observable<number>{
     intervalArray(1000)
   );
 }
-
 ```
 
 The above mapping function (`numberToStream`), takes care of the **map** part of `concatMap`, `mergeMap`, and `switchMap`
@@ -83,3 +82,44 @@ The output
 ```
 
 Only the final observable ran to completion in this case. The first two only had time to emit their first value before being unsubscribed. Just like concatMap, there is no interleaving and only one inner observable is running at a time, but some emissions are effectively dropped.
+
+## Just the code, so you can tinker:
+
+```JavaScript
+/****
+ * Emit 1, 2, 3, then complete: each 0.5 seconds apart
+ ****/
+function numberStream(): Observable<number> {
+  return of([1,2,3]).pipe(
+    intervalArray(500)
+  );
+}
+
+/****
+ * maps:
+ *   1 => 10, 11, 12, then complete: each 1 second apart 
+ *   2 => 20, 21, 22, then complete: each 1 second apart
+ *   3 => 30, 31, 32, then complete: each 1 second apart
+ ****/
+function numberToStream(num): Observable<number>{
+  return of([num*10, num*10+1, num*10+2]).pipe(
+    intervalArray(1000)
+  );
+}
+
+/****
+ * Run all three operators back-to-back
+ ****
+concat(
+  ...[
+    {name: "concatMap", op: concatMap}, 
+    {name: "mergeMap", op: mergeMap}, 
+    {name: "switchMap", op: switchMap}
+  ].map(({name, op}) => defer(() => {
+    console.log(name + ": ");
+    return numberStream().pipe(
+      op(numberToStream)
+    );
+  }))
+).subscribe(console.log);
+```
