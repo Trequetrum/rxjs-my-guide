@@ -24,6 +24,7 @@ There are many RxJS articles and guides out there. This one is being written as 
 - Custom Pipeable Operators
   - [log](tapLog.md)
   - [arrayMap](arrayMap.md)
+  - [result(concat/merge/switch)Map)](resultMap.md)
   - [intervalArray](intervalArray.md)
   - [filterFirst](filterFirst.md)
   - [catchComplete](catchComplete.md) (v2)
