@@ -102,7 +102,7 @@ As you can see, with intermediate objects, we don't require the call stack or fu
 
 ### Using resultSwitchMap
 
-Here is a [link to resultSwitchMap](resultMap)'s implementation. 
+Here is a [link to resultSwitchMap](resultMap.md)'s implementation. 
 This is the exact same pattern neatened up a little bit:
 
 ```JavaScript
@@ -128,7 +128,7 @@ The output is the exact same as before:
 ```
 ### Using sourcePayloadMap
 
-Here is a [link to sourcePayloadMap](resultMap)'s implementation. 
+Here is a [link to sourcePayloadMap](resultMap.md)'s implementation. 
 
 This is a more general/flexible operator than resultSwitchMap as it doesn't require the input to have a specific shape. The two are largly interchangable as shown by the mapping operator after each call re-aligning the output with the calls above.
 
