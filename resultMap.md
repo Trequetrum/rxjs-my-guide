@@ -1,4 +1,4 @@
-# The resultMap operators
+# The resultConcatMap, resultMergeMap, & resultSwitchMap Operators
 
 Take an JS Object as input, and map the result of the projected Observable into the JS Object as a new property using the given `key`.
 
