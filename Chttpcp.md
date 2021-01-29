@@ -100,6 +100,62 @@ As you can see, with intermediate objects, we don't require the call stack or fu
 
 ----
 
+### Using resultSwitchMap
+
+Here is a [link to resultSwitchMap](resultSwitchMap)'s implementation. 
+This is the exact same pattern neatened up a little bit:
+
+```JavaScript
+fakeHttpCall().pipe(
+  map(res => ({firstCall: res})),
+  resultSwitchMap(oby => fakeHttpCall(oby.firstCall), "secondCall"),
+  resultSwitchMap(oby => fakeHttpCall(oby.secondCall), "thirdCall"),
+  resultSwitchMap(oby => fakeHttpCall(oby.thirdCall), "fourthCall"),
+  resultSwitchMap(oby => fakeHttpCall(oby.fourthCall), "fifthCall")
+).subscribe(console.log);
+```
+
+The output is the exact same as before:
+
+```JSON
+{
+  "firstCall": 981,
+  "secondCall": 11,
+  "thirdCall": 8080,
+  "fourthCall": 0,
+  "fifthCall": 981
+}
+```
+### Using sourcePayloadMap
+
+This is a more general/flexible operator than resultSwitchMap as it doesn't require the input to have a specific shape. The two are largly interchangable as shown by the mapping operator after each call re-aligning the output with the calls above.
+
+```JavaScript
+fakeHttpCall().pipe(
+  map(v => ({firstCall: v})),
+  sourcePayloadMap(src => fakeHttpCall(src.firstCall)),
+  map(({source, payload}) => ({...source, secondCall: payload})),
+  sourcePayloadMap(src => fakeHttpCall(src.secondCall)),
+  map(({source, payload}) => ({...source, thirdCall: payload})),
+  sourcePayloadMap(src => fakeHttpCall(src.thirdCall)),
+  map(({source, payload}) => ({...source, fourthCall: payload})),
+  sourcePayloadMap(src => fakeHttpCall(src.fourthCall)),
+  map(({source, payload}) => ({...source, fifthCall: payload})),
+).subscribe(console.log);
+```
+
+The output is the exact same as before:
+
+```JSON
+{
+  "firstCall": 981,
+  "secondCall": 11,
+  "thirdCall": 8080,
+  "fourthCall": 0,
+  "fifthCall": 981
+}
+```
+
 ### More Than One Way to Skin a Cat
 
 This has identicle output and is cleaner for situations (like this one) that lend itself to recursive calls. If it's five unique calls with different results, this appraoch gets bloated. 
