@@ -4,7 +4,7 @@ Now that I've spent more time developing with Angular and RxJS, I don't use thes
 
 That being said, I’m sure there’s some fun uses for a pipeable way to enter and leave the angular zone mind-stream. Even if only for educational purposes. 
 
-```JavaScript
+```TypeScript
 constructor(private ngZone: NgZone) { }
 
 /*****
@@ -20,12 +20,13 @@ callBackWrapperObservable<T>(
   input$: Observable<T>, 
   callback: (fn: (v) => void) => void
 ): Observable<T> {
-  const callBackBind = fn => (v = undefined) => callback(() => fn(v))
+  const callBackBind = fn => (v = undefined) => callback(() => fn(v));
+  const bindOn = (ob, tag) => callBackBind(ob[tag].bind(ob));
   return new Observable<T>(observer => {
     const sub = input$.subscribe({
-      next: callBackBind(observer.next.bind(observer)),
-      error: callBackBind(observer.error.bind(observer)),
-      complete: callBackBind(observer.complete.bind(observer))
+      next: bindOn(observer, "next"),
+      error: bindOn(observer, "error"),
+      complete: bindOn(observer, "complete")
     });
     return { unsubscribe: () => sub.unsubscribe() };
   });
