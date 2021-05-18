@@ -191,3 +191,18 @@ setTimeout(() => {
   watch.control$.complete();
 }, actions.length * 1000);
 ```
+
+### StopWatch in Use # 3
+
+Control a stopwatch with DOM events to set fields on the DOM.
+
+```TypeScript
+createStopwatch(merge(
+  fromEvent(startBtn, 'click').pipe(mapTo("START")),
+  fromEvent(resetBtn, 'click').pipe(mapTo("RESET"))
+)).subscribe(seconds => {
+  secondsField.innerHTML  = seconds % 60;
+  minuitesField.innerHTML = Math.floor(seconds / 60) % 60;
+  hoursField.innerHTML    = Math.floor(seconds / 3600);
+});
+```
