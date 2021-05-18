@@ -24,15 +24,16 @@ function createStopwatch(control$: Observable<string>, interval = 1000): Observa
     let toggle: boolean = false;
     let count: number = 0;
 
-    const ticker = () => {
-      return timer(0, interval).pipe(
-        map(x => count++)
-      )
-    }
+    const ticker = timer(0, interval).pipe(
+      map(x => count++)
+    );
+    const end$ = of("END");
 
-    return control$.pipe(
-      catchError(_ => of("END")),
-      catchComplete(() => of("END")),
+    return concat(
+      control$,
+      end$
+    ).pipe(
+      catchError(_ => end$),
       filter(control => 
         control === "START" ||
         control === "STOP" ||
@@ -42,14 +43,14 @@ function createStopwatch(control$: Observable<string>, interval = 1000): Observa
       switchMap(control => {
         if(control === "START" && !toggle){
           toggle = true;
-          return ticker();
+          return ticker;
         }else if(control === "STOP" && toggle){
           toggle = false;
           return EMPTY;
         }else if(control === "RESET"){
           count = 0;
           if(toggle){
-            return ticker();
+            return ticker;
           }
         }
         return EMPTY;
