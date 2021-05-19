@@ -37,6 +37,7 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [predicate/priorityThrottleTime](priorityThrottleTime.md)
   - [ngZone run/runOutside](ngZoneOperators.md)
 - Mini-Projects
+  - [Concurrency Limiter for Disparate Streams](Clds.md)
   - [Managing Observable Subscriptions with Synchronous Streams](Mosss.md)
 
 ### Glossary:
