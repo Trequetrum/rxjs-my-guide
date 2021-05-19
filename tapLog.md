@@ -4,17 +4,16 @@ Using `tap` alongside `console.log` is pretty common while debugging, this lets 
 
 ```JavaScript
 /***
- * Returns a function that takes a value (v) and logs the message
+ * Curried function that logs the message (msg) and
+ * value (val)
  ***/
-function logMsg(msg:string){
-  return (v:any = null) => {
-    if (v != null) {
-      if (msg.length > 0) console.log(msg + ": ", v);
-      else console.log(v);
-    } else if (msg.length > 0) {
-      console.log(msg);
-    }
-  }
+function logMsg(msg: string) {
+  return (val: any = null) => 
+    msg == null || msg.length < 1 ? 
+      console.log(val) :
+      val == null ? 
+        console.log(msg) :
+        console.log(`${msg}: `, val);
 }
 
 /***
