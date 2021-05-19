@@ -27,6 +27,7 @@ There are many RxJS articles and guides out there. This one is being written as 
   - [sourceResult Merge](resultMap.md)s
   - [intervalArray](intervalArray.md)
   - [filterFirst](filterFirst.md)
+  - [initialize](initialize.md)
   - [catchComplete](catchComplete.md) (v2)
   - [catchEmpty](catchEmpty.md)
   - [startWithStream](startWithStream.md)
