@@ -20,7 +20,7 @@ function throttleTimeOn<T>(
 }
 ```
 
-# priorityThrottleTime
+# Priority Throttle Time
 
 ```TypeScript
 function priorityThrottleTime<T>(
