@@ -10,8 +10,14 @@ How will this work? Our custom observable creates a stream that outputs the numb
 
 ### Implemented with switchMap and Timer
 
-```JavaScript
-function createStopwatch(control$: Observable<string>, interval = 1000): Observable<number>{
+```TypeScript
+type StopwatchAction = "START" | "STOP" | "RESET" | "END";
+
+function createStopwatch(
+  control$: Observable<StopwatchAction>, 
+  interval = 1000
+): Observable<number>{
+
   return defer(() => {
     let toggle: boolean = false;
     let count: number = 0;
@@ -26,12 +32,6 @@ function createStopwatch(control$: Observable<string>, interval = 1000): Observa
       end$
     ).pipe(
       catchError(_ => end$),
-      filter(control => 
-        control === "START" ||
-        control === "STOP" ||
-        control === "RESET" ||
-        control === "END"
-      ),
       switchMap(control => {
         if(control === "START" && !toggle){
           toggle = true;
@@ -112,10 +112,10 @@ If the control stream is going to be a subject, this is a good way to create the
 
 ```JavaScript
 function getStopWatch(interval: number = 1000): {
-  control$: Subject<string>, 
+  control$: Subject<StopwatchAction>, 
   display$: Observable<number>
 } {
-  const control$ = new Subject<string>();
+  const control$ = new Subject<StopwatchAction>();
   return {
     control$,
     display$: createStopwatch(control$, interval)
@@ -143,7 +143,7 @@ const watch = getStopWatch(250);
 watch.display$.subscribe(console.log);
 
 // We send a new action to our control stream every 1 second
-const actions = ["START", "STOP", "START", "RESET", "START"]
+const actions: StopwatchAction[] = ["START", "STOP", "START", "RESET", "START"]
 
 zip(from(actions), interval(1000)).pipe(
   map(([x,_]) => x),
@@ -169,7 +169,7 @@ const watch = getStopWatch(250);
 watch.display$.subscribe(console.log);
 
 // We send a new action to our control stream every 1 second
-const actions = ["START", "STOP", "START", "RESET", "START"]
+const actions: StopwatchAction[] = ["START", "STOP", "START", "RESET", "START"]
 
 actions.forEach((action, index) => {
   setTimeout(() => {
