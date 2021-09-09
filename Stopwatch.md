@@ -54,7 +54,7 @@ function createStopwatch(
 
 ### Implemented with setTimeout
 
-```JavaScript
+```TypeScript
 function createStopwatch(control: Observable<string>, interval = 1000): Observable<number> {
   return new Observable(observer => {
     let count: number = 0;
@@ -110,7 +110,7 @@ function createStopwatch(control: Observable<string>, interval = 1000): Observab
 
 If the control stream is going to be a subject, this is a good way to create the stopwatch.
 
-```JavaScript
+```TypeScript
 function getStopWatch(interval: number = 1000): {
   control$: Subject<StopwatchAction>, 
   display$: Observable<number>
@@ -124,7 +124,7 @@ function getStopWatch(interval: number = 1000): {
 ```
 
 Stopwatch Object in Use:
-```JavaScript
+```TypeScript
 const watch = getStopWatch();
 watch.display$.subscribe(/*Numbers emitted here every interval once started by control$*/);
 watch.control$.next("START");
@@ -138,7 +138,7 @@ watch.control$.complete();
 
 Here is an example of this observable being used. I manage the control stream via a subject, but it could just as easily be merged/mapped DOM events or somesuch. 
 
-```JavaScript
+```TypeScript
 const watch = getStopWatch(250);
 watch.display$.subscribe(console.log);
 
@@ -164,7 +164,7 @@ zip(from(actions), interval(1000)).pipe(
 
 This controls the stopwatch with `setTimeout` instead of `interval`.
 
-```JavaScript
+```TypeScript
 const watch = getStopWatch(250);
 watch.display$.subscribe(console.log);
 
