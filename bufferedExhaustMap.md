@@ -20,7 +20,7 @@ This version creates a custom observable that buffers all values from the source
 
 There is a lot that could have been done here to be more concise and readable, but it turns out there's a better approach to doing this. I've left this here for posterity and because I liked the way it buffered values. 
 
-```JavaScript
+```TypeScript
 function bufferedExhaustMap<T,R>(
   project: (v:T[]) => ObservableInput<R>, 
   minBufferLength = 0, 
@@ -101,7 +101,7 @@ Version 2 also has an option for concurrency built-in. That is, the exhaust crit
 
 Here's the operator:
 
-```JavaScript
+```TypeScript
 function bufferedExhaustMap<T, R>(
   project: (v: T[]) => ObservableInput<R>,
   minBufferLength = 0,
@@ -119,8 +119,8 @@ function bufferedExhaustMap<T, R>(
         first(count => count < concurrent),
         mapTo(true)
       ),
-      start: (_ = null) => incOrDec.next(true),
-      end: (_ = null) => incOrDec.next(false)
+      start: () => incOrDec.next(true),
+      end: () => incOrDec.next(false)
     };
   }
 
@@ -129,11 +129,11 @@ function bufferedExhaustMap<T, R>(
 
     const shared = source.pipe(share());
 
-    const nextBufferTime = () => forkJoin(
+    const nextBufferTime = () => forkJoin([
       shared.pipe(take(minBufferCount), delay(0)),
       timer(minBufferLength),
       projectCount.onAvailable
-    );
+    ]);
 
     return shared.pipe(
       bufferWhen(nextBufferTime),
@@ -157,7 +157,7 @@ It does this by merging 3 observables and only completing once all three observa
  
 ### Commented
 
-```JavaScript
+```TypeScript
 /***
  * Buffers, then projects buffered source values to an Observable which is merged in
  * the output Observable only if the previous projected Observable has completed.
@@ -238,7 +238,7 @@ Here our batch process takes an array (batch) of numbers and always takes 5 seco
 We get a new number every 1/2second and we only want to 'compute' one batch of numbers at a time. We don't have any time restraints, but we'd like to add at least 6 numbers at a time. 
 
 ### Implementation
-```JavaScript
+```TypeScript
 function batchSumNumbers(nums: number[]): Observable<number> {
   return defer(() => {
     console.log("Start Batch Process: ", nums);
@@ -295,7 +295,7 @@ Our settup:
 - **`function updateClientEnemyMovement(cliendID: number, movementInfo: Movement[]): Observable<boolean>`** `updateClientEnemyMovement` updates a specific client with an array of enemy movements and emits true once the client has responded. The details aren't important, but this is the service that does the networking for us so it may be some time before the client responds. This can throw any known server error as well.
 - **`function communicateClientEnemyMovement(cliendID: number): void`** `communicateClientEnemyMovement` is the meat and potato of what we want done. This must decide when to call `updateClientEnemyMovement` and how to procure the current state of the world. This is where operator like `bufferedExhaustMap` can do most of the work for us. We'll implement that here.
 
-```JavaScript
+```TypeScript
 function communicateClientEnemyMovement(cliendID: number): void {
   enemyMovement.pipe(
     bufferedExhaustMap(
