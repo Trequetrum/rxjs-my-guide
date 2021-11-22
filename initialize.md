@@ -3,18 +3,20 @@
 Like `tap`, but performs some side-effect immediately after subscribing.
 
 ```TypeScript
-export function initialize<T>(fn: () => void): MonoTypeOperatorFunction<T> {
-  return s => new Observable(observer => {
-    const bindOn = name => observer[name].bind(observer);
-    const sub = s.subscribe({
-      next: bindOn("next"),
-      error: bindOn("error"),
-      complete: bindOn("complete")
-    });
-    fn();
-    return {
-      unsubscribe: () => sub.unsubscribe()
-    };
+export function initialize<T>(effect: () => void): MonoTypeOperatorFunction<T> {
+  return s => new Observable(ob => {
+    const sub = s.subscribe(ob);
+    effect();
+    return sub;
   });
 }
 ```
+ Example:
+ ```TypeScript
+const a$ = new Subject<number>();
+
+a$.pipe(
+  initialize(() => a$.next(5)),
+  map(v => v + 1)
+).subscribe(console.log);
+ ```
