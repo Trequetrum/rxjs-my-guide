@@ -23,7 +23,7 @@ function delayWhile<T>(fn: (T)=>boolean): MonoTypeOperatorFunction<T>{
       complete: observer.complete.bind(observer),
       error: observer.error.bind(observer)
     })
-    return {unsubscribe: () => {sub.unsubscribe()}};
+    return sub;
   });
 }
 ```
